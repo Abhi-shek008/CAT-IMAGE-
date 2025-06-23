@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TALENTLESS SIGNAL - Elite Trader Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-font: 'Inter', Arial, sans-serif;
+      --header-font: 'Poppins', Arial, sans-serif;
+      --bg-dark-primary: #090A0E; /* Deepest Charcoal Blue */
+      --bg-dark-secondary: #0E0F15; /* Hub Container Background */
+      --bg-dark-tertiary: #14161E; /* Subtle contrast for elements if needed */
+      --accent-primary: #00F0D0; /* Ultra Vibrant Teal */
+      --accent-secondary: #D080FF; /* Vibrant Orchid */
+      --text-light: #F8FAFC; /* Brighter main text */
+      --text-medium: #B8C0D0; 
+      --text-dark: #090A0E;
+      --green: #1FE880; --green-dark: #17C06A;
+      --red: #FF3855;   --red-dark: #E62540;
+      --yellow: #FFBD44; --yellow-dark: #FAA012;
+      --border-radius-xl: 28px;
+      --border-radius-lg: 22px;
+      --border-radius-md: 18px;
+      --border-radius-sm: 14px;
+      --shadow-ambient: 0 8px 28px rgba(0, 0, 0, 0.4);
+      --shadow-interactive: 0 12px 40px rgba(0, 0, 0, 0.5);
+      --glow-accent-primary: 0 0 15px rgba(0, 240, 208, 0.65), 0 0 30px rgba(0, 240, 208, 0.45);
+      --glow-accent-secondary: 0 0 15px rgba(208, 128, 255, 0.55), 0 0 30px rgba(208, 128, 255, 0.35);
+      --transition-fast: 0.29s cubic-bezier(0.55, 0, 0.1, 1);
+      --transition-medium: 0.46s cubic-bezier(0.55, 0, 0.1, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline-color: var(--accent-primary); }
+    html, body { height: 100%; width:100%; overflow: hidden; } 
+
+    body {
+      font-family: var(--primary-font);
+      background: var(--bg-dark-primary);
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; 
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 15px; /* Base for smaller text, rem units will scale from this */
+    }
+    @media (min-width: 768px) { body { font-size: 16px; } }
+    @media (min-width: 1200px) { body { font-size: 17px; } }
+
+    /* Modals (Same refined style) */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(8, 9, 13, 0.93); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity var(--transition-medium), visibility 0s var(--transition-medium); }
+    .modal-overlay.active { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .modal-content { background: linear-gradient(150deg, var(--bg-dark-secondary), var(--bg-dark-tertiary)); padding: 2.5rem 2rem; border-radius: var(--border-radius-xl); box-shadow: var(--shadow-interactive), 0 0 80px rgba(0,0,0,0.9); width: 90%; max-width: 520px; text-align: center; transform: scale(0.92) translateY(22px); transition: transform var(--transition-medium), opacity var(--transition-medium); border-top: 7px solid var(--accent-primary); opacity: 0; }
+    .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+    .modal-content h2 { font-family: var(--header-font); color: var(--accent-primary); margin-bottom: 1.7rem; font-size: 2.2rem; font-weight: 700; text-shadow: var(--glow-accent-primary); }
+    .modal-content p { margin-bottom: 1.9rem; line-height: 1.75; color: var(--text-medium); font-size: 1rem; }
+    .modal-content .access-options { display: flex; gap: 1.1rem; margin-bottom: 1.9rem; }
+    .modal-content .access-type-btn, .modal-content .modal-action-btn { flex-grow: 1; background: linear-gradient(145deg, var(--accent-primary), #00C8AC); color: var(--text-dark); border: none; padding: 1rem 1.3rem; font-size: 1.05rem; font-weight: 600; border-radius: var(--border-radius-lg); cursor: pointer; transition: all var(--transition-fast); box-shadow: 0 4px 8px rgba(0,0,0,0.32), inset 0 -3px 0px rgba(0,0,0,0.22); }
+    .modal-content .access-type-btn:hover, .modal-content .modal-action-btn:hover { background: linear-gradient(145deg, #00D8BC, #00B8A0); transform: translateY(-4px) scale(1.03); box-shadow: 0 7px 18px rgba(0, 232, 200, 0.52), var(--glow-accent-primary), inset 0 -2px 0px rgba(0,0,0,0.18); }
+    .modal-content #passwordSection, .modal-content #profileSetupSection { margin-top: 1.7rem; }
+    .modal-content label { display: block; margin-bottom: 0.6rem; font-weight: 500; color: var(--text-light); text-align: left; font-size: 0.95rem;}
+    .modal-content input[type="password"], .modal-content input[type="text"], .modal-content input[type="number"] { width: 100%; padding: 1.05rem; font-size: 1.05rem; background-color: var(--bg-dark-primary); border: 2px solid var(--accent-secondary); color: var(--text-light); border-radius: var(--border-radius-lg); margin-bottom: 1.7rem; transition: border-color var(--transition-fast), box-shadow var(--transition-fast); }
+    .modal-content input[type="password"]:focus, .modal-content input[type="text"]:focus, .modal-content input[type="number"]:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 4.2px rgba(0, 232, 200, 0.38), var(--glow-accent-primary); }
+    .modal-content .error-message { color: var(--red); font-size: 0.88rem; min-height: 1.2em; margin-top: -1rem; margin-bottom: 1.2rem; text-align: left; font-weight:500;}
+    .modal-content .modal-note { font-size: 0.82rem; color: var(--text-medium); margin-top: 1.9rem; margin-bottom: 0; }
+    #disclaimerText { font-size: 0.85rem; color: var(--text-medium); margin-bottom: 1.9rem; max-height: 125px; overflow-y: auto; border: 1.5px solid var(--bg-dark-primary); padding: 0.9rem; border-radius: var(--border-radius-lg); text-align: left; background: rgba(0,0,0,0.28); }
+    #disclaimerText p { margin-bottom: 0.65rem; } #disclaimerText a { color: var(--accent-primary); text-decoration: none; font-weight: 600;}
+    #disclaimerText a:hover { text-decoration: underline; text-shadow: var(--glow-accent-primary); }
+
+    /* --- Main Application Hub --- SINGLE PAGE FLOW */
+    .hub-container {
+      display: none; width: 100%; height: 100%; 
+      background-color: var(--bg-dark-secondary); 
+      padding: 1.25rem; /* Overall padding for the hub */
+      opacity: 0; transform: translateY(15px) scale(0.98);
+      transition: opacity 0.48s var(--transition-medium), transform 0.48s var(--transition-medium);
+      overflow: hidden; 
+      display: flex; flex-direction: column;
+    }
+    .hub-container.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+    .hub-header { text-align: center; margin-bottom: 1.5rem; padding: 1rem 0; border-bottom: 2px solid rgba(200, 124, 255, 0.32); flex-shrink: 0; }
+    .hub-header h1 { font-family: var(--header-font); font-size: 2.5rem; font-weight: 700; letter-spacing: 1.1px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 16px rgba(0, 232, 200, 0.42), 0 0 28px rgba(200, 124, 255, 0.32); }
+    .hub-header p { font-size: 1.05rem; color: var(--text-medium); margin-top: 0.7rem; }
+
+    .hub-main-content { 
+      display: grid; 
+      grid-template-columns: 1fr; 
+      gap: 1.5rem; /* Gap between logical sections */
+      flex-grow: 1; 
+      overflow-y: auto; /* Scroll the entire main content area */
+      padding: 0.25rem; /* Minimal padding for grid items */
+    }
+    /* NO distinct boxes for signal-ops-area and stats-leaderboard-area */
+    .signal-ops-area, .stats-leaderboard-area {
+        padding: 0.25rem; /* Minimal padding, content flows */
+        /* Removed background, box-shadow, border-radius */
+    }
+     .stats-leaderboard-area { display: flex; flex-direction: column; }
+
+    .section-title { font-family: var(--header-font); font-size: 1.6rem; font-weight: 600; color: var(--accent-primary); margin-top: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 2.2px solid rgba(0, 232, 200, 0.38); text-shadow: 0 0 10px rgba(0, 232, 200, 0.48); }
+    .signal-ops-area > .section-title:first-child, .stats-leaderboard-area > .section-title:first-child { margin-top: 0; } /* No top margin for first title in a column */
+
+
+    #signalInputSection label { display: block; font-size: 1.1rem; font-weight: 500; margin-bottom: 0.8rem; }
+    #signalInputSection code { background-color: var(--bg-dark-tertiary); color: var(--accent-secondary); padding: 0.25em 0.6em; border-radius: var(--border-radius-sm); font-size: 0.95rem; }
+    #signalInput { width: 100%; padding: 1.1rem 1.2rem; font-size: 1.15rem; background-color: var(--bg-dark-tertiary); color: var(--text-light); border: 2px solid var(--accent-secondary); border-radius: var(--border-radius-lg); margin-bottom: 1.6rem; transition: all var(--transition-fast); box-shadow: inset 0 2.5px 5px rgba(0,0,0,0.35); }
+    #signalInput:focus { border-color: var(--accent-primary); box-shadow: inset 0 2.5px 5px rgba(0,0,0,0.35), 0 0 0 4.2px rgba(0, 232, 200, 0.38), var(--glow-accent-primary); }
+    #signalInput:disabled { background-color: #13151C; color: var(--text-medium); cursor: not-allowed; }
+
+    #checkSignalBtn { width: 100%; padding: 1.2rem; font-size: 1.25rem; font-weight: 700; font-family: var(--header-font); color: var(--text-dark); background: linear-gradient(145deg, var(--accent-primary), #00C8AC); border: none; border-radius: var(--border-radius-lg); cursor: pointer; transition: all var(--transition-fast); display: flex; align-items: center; justify-content: center; gap: 0.8rem; box-shadow: 0 4.5px 9px rgba(0,0,0,0.38), inset 0 -3.2px 0px rgba(0,0,0,0.28); text-transform: uppercase; letter-spacing: 0.75px; }
+    #checkSignalBtn:hover:not(:disabled) { background: linear-gradient(145deg, #00D8BC, #00B8A0); transform: translateY(-3.5px) scale(1.02); box-shadow: 0 7px 19px rgba(0, 232, 200, 0.52), var(--glow-accent-primary), inset 0 -2px 0px rgba(0,0,0,0.18); }
+    #checkSignalBtn:disabled { background-color: #20222A; color: var(--text-medium); cursor: not-allowed; transform: none; box-shadow: inset 0 2.5px 5px rgba(0,0,0,0.38);}
+    #pairActivityIndicator { font-size: 0.95rem; color: var(--accent-primary); text-align: center; margin-top: 1.25rem; padding: 0.65rem; background-color: rgba(0,232,200,0.07); border-radius: var(--border-radius-lg); border: 1.4px solid rgba(0,232,200,0.14); font-weight:500;}
+
+    .btn-loader .spinner-icon { animation: rotate 1.5s linear infinite; width: 23px; height: 23px; }
+    .btn-loader .spinner-icon .path { stroke: var(--text-dark); stroke-linecap: round; animation: dash 1.2s ease-in-out infinite; stroke-width: 6.2px; }
+
+    #currentSignalDisplay { margin-top: 2rem; padding: 1.7rem; border-radius: var(--border-radius-xl); background-color: var(--bg-dark-tertiary); min-height: 130px; text-align: center; font-size: 1.2rem; display: none; animation: fadeInSmooth 0.5s ease-out; box-shadow: inset 0 0 22px rgba(0,0,0,0.48), 0 2.8px 6.5px rgba(0,0,0,0.22); border-left: 5px solid; }
+    #currentSignalDisplay.visible { display: block; }
+    #currentSignalDisplay.green { border-left-color: var(--green); box-shadow: inset 0 0 22px rgba(0,0,0,0.48), 0 2.8px 6.5px rgba(0,0,0,0.22), 0 0 19px var(--green); }
+    #currentSignalDisplay.yellow { border-left-color: var(--yellow); box-shadow: inset 0 0 22px rgba(0,0,0,0.48), 0 2.8px 6.5px rgba(0,0,0,0.22), 0 0 19px var(--yellow); }
+    #currentSignalDisplay.red { border-left-color: var(--red); box-shadow: inset 0 0 22px rgba(0,0,0,0.48), 0 2.8px 6.5px rgba(0,0,0,0.22), 0 0 19px var(--red); }
+    #currentSignalDisplay .signal-text { font-weight: 600; white-space: pre-line; margin-bottom: 0.8rem; font-size: 1.4rem;}
+    #currentSignalDisplay .signal-prediction { font-family:var(--header-font); font-size: 1.9rem; font-weight: 700; margin-top: 0.8rem; text-shadow: 0 0 15px currentColor, 0 0 25px currentColor; }
+    #currentSignalDisplay.green .signal-prediction { color: var(--green); } #currentSignalDisplay.yellow .signal-prediction { color: var(--yellow); } #currentSignalDisplay.red .signal-prediction { color: var(--red); }
+    #currentSignalDisplay .pending-feedback-msg { font-size: 1rem; color: var(--text-medium); margin-top: 1.5rem; font-style: italic; }
+    @keyframes fadeInSmooth { from { opacity: 0; transform: translateY(19px) scale(0.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    #feedbackButtons { margin-top: 1.7rem; display: none; gap: 1rem; justify-content: center; animation: fadeInSmooth 0.5s 0.25s ease-out backwards; flex-direction: column; }
+    #feedbackButtons.visible { display: flex; }
+    .feedback-btn { padding: 1.1rem 1.6rem; font-size: 1.05rem; font-weight: 600; font-family: var(--header-font); border: none; border-radius: var(--border-radius-lg); cursor: pointer; transition: all var(--transition-fast); flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 0.7rem; box-shadow: 0 3.8px 8.5px rgba(0,0,0,0.28), inset 0 -3px 0px rgba(0,0,0,0.22); text-transform: uppercase; letter-spacing: 0.7px; }
+    .feedback-btn svg { width: 19px; height: 19px; }
+    #winBtn { background-color: var(--green); color: white; }
+    #winBtn:hover { background-color: var(--green-dark); transform: translateY(-2.8px) scale(1.018); box-shadow: 0 6px 16px rgba(30, 224, 124, 0.48), 0 0 22px var(--green), inset 0 -2px 0px rgba(0,0,0,0.15); }
+    #lossBtn { background-color: var(--red); color: white; }
+    #lossBtn:hover { background-color: var(--red-dark); transform: translateY(-2.8px) scale(1.018); box-shadow: 0 6px 16px rgba(255, 61, 94, 0.48), 0 0 22px var(--red), inset 0 -2px 0px rgba(0,0,0,0.15); }
+    #avoidBtn { background-color: var(--yellow); color: var(--text-dark); }
+    #avoidBtn:hover { background-color: var(--yellow-dark); transform: translateY(-2.8px) scale(1.018); box-shadow: 0 6px 16px rgba(255, 191, 59, 0.48), 0 0 22px var(--yellow), inset 0 -2px 0px rgba(0,0,0,0.15); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
+    .stat-item { background: linear-gradient(150deg, var(--bg-dark-tertiary), var(--bg-dark-secondary)); padding: 1.5rem 1rem; text-align: center; border-radius: var(--border-radius-xl); box-shadow: var(--shadow-ambient), inset 0 2px 2.8px rgba(0,0,0,0.28); transition: transform var(--transition-fast), box-shadow var(--transition-fast); border-bottom: 4.2px solid transparent; }
+    .stat-item:hover { transform: translateY(-5px) scale(1.028); box-shadow: var(--shadow-interactive), inset 0 1.5px 2.2px rgba(0,0,0,0.22); }
+    #winsCount:hover { border-bottom-color: var(--green); } #lossesCount:hover { border-bottom-color: var(--red); } #avoidsCount:hover { border-bottom-color: var(--yellow); }
+    .stat-item .value { font-family: var(--header-font); font-size: 2.2rem; font-weight: 700; display: block; text-shadow: 0 0 10px currentColor; }
+    .stat-item .label { font-size: 0.9rem; color: var(--text-medium); margin-top: 0.32rem; text-transform: uppercase; letter-spacing: 0.58px;}
+    #winsCount .value { color: var(--green); } #lossesCount .value { color: var(--red); } #avoidsCount .value { color: var(--yellow); }
+
+    .accuracy-dial-container { text-align: center; margin-bottom: 2.5rem; }
+    .accuracy-dial { width: 150px; height: 150px; position: relative; margin: 0 auto; }
+    .accuracy-dial svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .dial-track, .dial-value { fill: none; stroke-width: 14px; }
+    .dial-track { stroke: var(--bg-dark-tertiary); } /* Use tertiary for track for contrast */
+    .dial-value { stroke: var(--accent-primary); stroke-linecap: round; transition: stroke-dashoffset var(--transition-medium); filter: drop-shadow(var(--glow-accent-primary)); }
+    .accuracy-text { font-family: var(--header-font); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.2rem; font-weight: 700; color: var(--accent-primary); text-shadow: var(--glow-accent-primary); }
+    .accuracy-label { font-size: 1.02rem; color: var(--text-medium); margin-top: 0.75rem; font-weight: 500; }
+
+    #signalHistoryList, #marketPulseStreamList { list-style: none; padding: 0; max-height: 180px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--accent-secondary) var(--bg-dark-tertiary); padding-right: 0.5rem;}
+    #signalHistoryList::-webkit-scrollbar, #marketPulseStreamList::-webkit-scrollbar { width: 0.5rem; } 
+    #signalHistoryList::-webkit-scrollbar-track, #marketPulseStreamList::-webkit-scrollbar-track { background: var(--bg-dark-tertiary); border-radius: 0.25rem; } 
+    #signalHistoryList::-webkit-scrollbar-thumb, #marketPulseStreamList::-webkit-scrollbar-thumb { background-color: var(--accent-secondary); border-radius: 0.25rem; }
+    
+    #signalHistoryList li { background-color: var(--bg-dark-tertiary); padding: 0.9rem 1.1rem; border-radius: var(--border-radius-lg); margin-bottom: 0.7rem; font-size: 0.95rem; color: var(--text-medium); display: flex; justify-content: space-between; align-items: center; opacity: 0; animation: fadeInListItem 0.5s ease-out forwards; border-left: 4.2px solid transparent; transition: border-left-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast); }
+    #signalHistoryList li:hover { border-left-color: var(--accent-primary); background-color: rgba(0, 232, 200, 0.042); transform: translateX(4px);}
+    #signalHistoryList li:nth-child(odd) { background-color: var(--bg-dark-secondary); } /* Slight alternation */
+    #signalHistoryList .outcome-win { color: var(--green); font-weight: 600; text-shadow: 0 0 7px var(--green); }
+    #signalHistoryList .outcome-loss { color: var(--red); font-weight: 600; text-shadow: 0 0 7px var(--red); }
+    #signalHistoryList .outcome-avoid { color: var(--yellow); font-weight: 600; text-shadow: 0 0 7px var(--yellow); }
+    @keyframes fadeInListItem { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+
+    .leaderboard-table { width: 100%; border-collapse: collapse; }
+    .leaderboard-table th, .leaderboard-table td { padding: 0.95rem 0.7rem; text-align: left; border-bottom: 1.5px solid rgba(80,85,100,0.8); font-size: 0.95rem;}
+    .leaderboard-table th { font-family: var(--header-font); font-size: 0.85rem; color: var(--text-medium); font-weight: 600; text-transform: uppercase; letter-spacing: 0.82px; }
+    .leaderboard-table tr:last-child td { border-bottom: none; }
+    .leaderboard-table .rank { font-family: var(--header-font); font-weight: 700; color: var(--accent-primary); width: 42px; text-shadow: var(--glow-accent-primary); font-size: 1.15rem; }
+    .leaderboard-table .name { font-weight: 500; display: flex; align-items: center; gap: 0.62rem; }
+    .leaderboard-table .name .flag { font-size: 1.25rem; }
+    .leaderboard-table .accuracy { font-family: var(--header-font); font-weight: 700; font-size: 1.08rem; }
+    .leaderboard-table tr { opacity: 0; transform: translateX(-21px); animation: slideInRow 0.5s ease-out forwards; transition: background-color var(--transition-fast), transform var(--transition-fast); }
+    .leaderboard-table tr:hover { background-color: rgba(0, 232, 200, 0.052); transform: translateX(-21px) scale(1.016); }
+    .leaderboard-table tr:nth-child(1){animation-delay:0.072s} .leaderboard-table tr:nth-child(2){animation-delay:0.144s} .leaderboard-table tr:nth-child(3){animation-delay:0.216s} .leaderboard-table tr:nth-child(4){animation-delay:0.288s} .leaderboard-table tr:nth-child(5){animation-delay:0.36s} .leaderboard-table tr:nth-child(6){animation-delay:0.432s} .leaderboard-table tr:nth-child(7){animation-delay:0.504s} .leaderboard-table tr:nth-child(8){animation-delay:0.576s} .leaderboard-table tr:nth-child(9){animation-delay:0.648s} .leaderboard-table tr:nth-child(10){animation-delay:0.72s}
+    @keyframes slideInRow { to { opacity: 1; transform: translateX(0); } }
+    
+    .app-note { margin-top: 2rem; color: var(--text-medium); text-align: center; font-size: 0.9rem; }
+    .hub-footer { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-medium); opacity: 0.72; flex-shrink: 0; padding-bottom: 1rem;}
+    .hub-footer a { color: var(--accent-primary); text-decoration: none; font-weight: 500;}
+    .hub-footer a:hover { text-decoration: underline; text-shadow: var(--glow-accent-primary); }
+
+    #marketPulseSection h4 { font-family: var(--header-font); color: var(--accent-primary); margin-bottom: 1.2rem; font-size: 1.3rem; font-weight:600; border-bottom: 2px solid rgba(0,232,200,0.28); padding-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; text-shadow: var(--glow-accent-primary); }
+    #marketPulseStatus { font-size: 0.8rem; font-weight: 400; color: var(--text-medium); opacity: 0.88; }
+    .glowing-dot { display: inline-block; width: 9px; height: 9px; background-color: var(--green); border-radius: 50%; box-shadow: 0 0 9px var(--green), 0 0 14px var(--green); animation: pulseDot 1.48s infinite ease-in-out; margin-left: 0.7rem; }
+    #marketPulseSection.inactive .glowing-dot { background-color: var(--yellow); box-shadow: 0 0 9px var(--yellow), 0 0 14px var(--yellow); }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.88); } }
+    
+    .market-pulse-item { padding: 0.75rem 0.3rem; border-bottom: 1.3px solid rgba(255,255,255,0.082); opacity: 0; animation: fadeInListItemGeneral 0.6s forwards; color: var(--text-light); line-height: 1.45; display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+    .market-pulse-item:last-child { border-bottom: none; }
+    .pulse-user-flag { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; width: 36%;}
+    .pulse-user-flag .flag { font-size: 1.12rem;}
+    .pulse-user-flag .pulse-user { color: var(--accent-secondary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .pulse-details { flex-grow: 1; text-align: left; padding: 0 0.6rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+    .pulse-details .pulse-pair { font-weight: 500; color: var(--text-light); }
+    .pulse-details .pulse-strategy { font-size: 0.88em; opacity: 0.8;}
+    .pulse-outcome { flex-shrink: 0; text-align: right; font-weight: 600; width: 26%;} 
+    .pulse-outcome .pulse-win { color: var(--green); } .pulse-outcome .pulse-loss { color: var(--red); } .pulse-outcome .pulse-avoid { color: var(--yellow); }
+    .user-trade-pulse-highlight { background-color: rgba(0, 232, 200, 0.062); border-left: 3px solid var(--accent-primary); padding-left:0.6rem; margin-left:-0.6rem; border-radius:var(--border-radius-md); }
+    @keyframes fadeInListItemGeneral { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    #toastNotification { position: fixed; top: 1.2rem; left:1.2rem; right: 1.2rem; background: linear-gradient(145deg, var(--accent-primary), #00C8AC); color: var(--text-dark); padding: 1.1rem 1.4rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-interactive), 0 0 18px rgba(0, 232, 200, 0.45); z-index: 2000; display: none; font-weight: 600; font-size: 1rem; text-align:center; opacity:0; transform: translateY(-44px) scale(0.918); transition: opacity 0.4s var(--transition-medium), transform 0.4s var(--transition-medium); }
+    #toastNotification.show { display: block; opacity: 1; transform: translateY(0) scale(1); }
+
+    /* Desktop Optimizations */
+    @media (min-width: 992px) { 
+      .hub-container { padding: 2rem; }
+      .hub-main-content { grid-template-columns: 2.2fr 1fr; gap: 2rem; } 
+      .signal-ops-area, .stats-leaderboard-area { padding: 0.5rem; } /* Keep minimal padding for flow */
+      #feedbackButtons { flex-direction: row; }
+      .section-title { font-size: 1.75rem; }
+      .hub-header h1 { font-size: 3rem; }
+      .hub-header p { font-size: 1.2rem; }
+      #pairActivityIndicator { text-align: right; background-color: transparent; padding: 0; margin-top: -1.1rem; margin-bottom: 1.5rem; border: none; font-size: 0.92rem;}
+      #marketPulseStreamList { max-height: 200px; } 
+    }
+     @media (min-width: 1400px) { 
+        .hub-main-content { grid-template-columns: 2.3fr 1fr; gap: 2.5rem;}
+        #marketPulseStreamList { max-height: 250px; } 
+     }
+  </style>
+</head>
+<body>
+    <!-- HTML Structure remains the same -->
+    <!-- Password Modal -->
+  <div id="accessModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Exclusive Access Portal</h2>
+      <p>Authenticate to enter the TALENTLESS SIGNAL Hub. Select your access tier.</p>
+      <div class="access-options">
+        <button id="tempAccessBtn" class="access-type-btn" data-type="temporary">Temporary Pass</button>
+        <button id="permAccessBtn" class="access-type-btn" data-type="permanent">Lifetime Key</button>
+      </div>
+      <div id="passwordSection" style="display: none;">
+        <label for="passwordInputModal">Enter <span id="accessTypeSelected"></span> Credentials:</label>
+        <input type="password" id="passwordInputModal" placeholder="Your Access Key...">
+        <button id="submitPasswordBtn" class="modal-action-btn" style="width:100%; margin-top:0.5rem;">Verify & Enter</button>
+        <p id="passwordError" class="error-message"></p>
+      </div>
+      <p class="modal-note">A Temporary Pass grants 3-day access. Unlock full, unrestricted potential with a Lifetime Key.</p>
+    </div>
+  </div>
+
+  <!-- Disclaimer Modal -->
+  <div id="disclaimerModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Welcome to the Arena!</h2>
+        <p>Set up your trader profile and acknowledge the terms to proceed.</p>
+        
+        <div id="profileSetupSection" style="text-align: left; margin-bottom: 1.25rem;">
+            <label for="usernameInputDisclaimer">Your Trader Alias:</label>
+            <input type="text" id="usernameInputDisclaimer" placeholder="E.g., MarketMaverick7, AlphaSignal">
+            <p id="usernameErrorDisclaimer" class="error-message" style="margin-bottom:0.5rem;"></p>
+            
+            <label for="targetGoalInput">Daily Win Target (Optional Session Goal):</label>
+            <input type="number" id="targetGoalInput" placeholder="E.g., 7 Successful Trades">
+        </div>
+
+        <div id="disclaimerText">
+            <p><strong>Critical Notice:</strong> Trading in financial markets carries a high level of risk and may not be suitable for all investors. All signals, tools, and content provided by "TALENTLESS SIGNAL" (this "website" or "talentless trader") are for educational, informational, and entertainment purposes ONLY. No financial, investment, or trading advice is provided or implied. Past performance, real or simulated, does not guarantee future results.</p>
+            <p>By clicking "Agree & Access Hub", you confirm your understanding of these risks, verify you are of legal age in your jurisdiction, and agree that TALENTLESS SIGNAL and its creators are not liable for any trading decisions or financial outcomes. Always trade responsibly and within your means.</p>
+            <p>Support: <a href="https://t.me/Nir_gun" target="_blank">Nir_gun (Telegram)</a></p>
+        </div>
+        <button id="agreeDisclaimerBtn" class="modal-action-btn" style="width:100%;">Agree & Access Hub</button>
+    </div>
+  </div>
+
+  <!-- Main Application Hub -->
+  <div class="hub-container" id="hubContainer">
+    <header class="hub-header">
+      <h1>TALENTLESS SIGNAL</h1>
+      <p>Advanced Signals for Strategic Market Navigation</p>
+    </header>
+
+    <div class="hub-main-content">
+      <section class="signal-ops-area"> 
+        <h2 class="section-title">Signal Console</h2>
+        
+        <div id="signalInputSection">
+            <label for="signalInput">Input Signal (Format: <code>HH:MM PAIR [OTC]</code>):</label>
+            <input id="signalInput" type="text" placeholder="e.g., 10:35 EUR/USD OTC" autofocus>
+            <button id="checkSignalBtn">
+              <span class="btn-text">Process Signal</span>
+              <span class="btn-loader" style="display: none;">
+                <svg class="spinner-icon" viewBox="0 0 50 50"><circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>
+              </span>
+            </button>
+            <div id="pairActivityIndicator">Initializing market data...</div>
+        </div>
+
+        <div id="currentSignalDisplay">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div id="feedbackButtons">
+            <button id="winBtn" class="feedback-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.293 8.293-5.293 5.293-2.293-2.293a1 1 0 0 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l6-6a1 1 0 0 0-1.414-1.414z"/></svg>
+                CONFIRMED WIN
+            </button>
+            <button id="lossBtn" class="feedback-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1.414 12.586L12 13.172l-1.414 1.414a1 1 0 0 1-1.414-1.414L10.586 12 9.172 10.586a1 1 0 0 1 1.414-1.414L12 10.758l1.414-1.414a1 1 0 0 1 1.414 1.414L13.414 12l1.414 1.414a1 1 0 0 1-1.414 1.414z"/></svg>
+                CONFIRMED LOSS
+            </button>
+            <button id="avoidBtn" class="feedback-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 3a1 1 0 0 0-1 1v7a1 1 0 0 0 2 0V6a1 1 0 0 0-1-1zm0 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+                MARKED AVOID
+            </button>
+        </div>
+        <small class="app-note">Your input refines signal precision and personalizes insights.</small>
+      </section>
+
+      <section class="stats-leaderboard-area"> 
+        <section id="traderStats">
+          <h2 class="section-title">Performance Dashboard</h2>
+          <div class="accuracy-dial-container">
+            <div class="accuracy-dial">
+              <svg viewBox="0 0 36 36">
+                <path class="dial-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path id="accuracyDialValue" class="dial-value" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <div id="accuracyText" class="accuracy-text">0%</div>
+            </div>
+            <p class="accuracy-label">Accuracy Rate</p>
+          </div>
+          <div class="stats-grid">
+            <div id="winsCount" class="stat-item"><span class="value">0</span><span class="label">Wins</span></div>
+            <div id="lossesCount" class="stat-item"><span class="value">0</span><span class="label">Losses</span></div>
+            <div id="avoidsCount" class="stat-item"><span class="value">0</span><span class="label">Avoids</span></div>
+          </div>
+        </section>
+
+        <section id="signalHistory">
+            <h3 class="section-title" style="font-size: 1.35rem; margin-top: 1.8rem;">Your Trade Log</h3>
+            <ul id="signalHistoryList">
+                 <li style="opacity:1; text-align:center; color: var(--text-medium)">No trade history yet. Your journey starts now!</li>
+            </ul>
+        </section>
+        
+        <section id="marketPulseSection" style="display: none;">
+          <h4 class="section-title" style="font-size:1.35rem;">Market Pulse <span id="marketPulseStatus">(Initializing...)</span> <span class="glowing-dot"></span></h4>
+          <ul id="marketPulseStreamList">
+          </ul>
+        </section>
+
+        <section id="leaderboard" style="margin-top:auto; padding-top:1.8rem;"> 
+          <h2 class="section-title" style="font-size:1.35rem;">Daily Top Traders <span style="font-size:0.7em; color:var(--text-medium)">(Global)</span></h2>
+          <table class="leaderboard-table">
+            <thead>
+              <tr><th>#</th><th>Trader Profile</th><th>Trades</th><th>Win %</th></tr>
+            </thead>
+            <tbody id="leaderboardBody">
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </div>
+    <footer class="hub-footer">
+      <p>&copy; <span id="currentYear"></span> TALENTLESS SIGNAL. For educational, informational, and entertainment purposes only.</p>
+      <p>Contact Support: <a href="https://t.me/Nir_gun" target="_blank">Nir_gun (Telegram)</a></p>
+    </footer>
+  </div>
+
+  <div id="toastNotification">
+  </div>
+
+  <script>
+    // --- Configuration ---
+    const APP_NAME = "TALENTLESS SIGNAL";
+    const PASSWORDS = { TEMP: "T5MP 5VIp PO", PERM: "T1L5TLESS TrA45R PO 5VIp" };
+    const LS_BASE_KEY = 'talentlessSignal_v8_'; // <<<< KEY INCREMENTED AGAIN!
+    const LS_KEYS = {};
+    for (const key of ['ACCESS_TYPE', 'ACCESS_TIMESTAMP', 'DISCLAIMER_AGREED', 'USERNAME', 'USER_GOAL', 'USER_STATS', 'CURRENT_SIGNAL_STATE', 'SIGNAL_HISTORY', 'LEADERBOARD_DATA', 'LEADERBOARD_DATE', 'LIVE_ACTIVITY_DATE', 'LIVE_ACTIVITY_CACHE', 'LAST_INPUT_TEXT']) {
+        LS_KEYS[key] = LS_BASE_KEY + key.toLowerCase();
+    }
+    const TEMP_ACCESS_DURATION = 3 * 24 * 60 * 60 * 1000;
+    const MAX_HISTORY_ITEMS = 15; 
+    const MAX_LIVE_ACTIVITY_ITEMS = 7;
+
+
+    // --- DOM Elements --- (Same as before)
+    let accessModal, disclaimerModal, hubContainer, passwordSection, accessTypeSelectedSpan,
+        passwordInputModal, submitPasswordBtn, passwordError, tempAccessBtn, permAccessBtn,
+        usernameInputDisclaimer, targetGoalInput, agreeDisclaimerBtn, usernameErrorDisclaimer,
+        signalInput, checkSignalBtn, currentSignalDisplay, feedbackButtons,
+        winBtn, lossBtn, avoidBtn, pairActivityIndicatorEl,
+        winsCountEl, lossesCountEl, avoidsCountEl, accuracyDialValueEl, accuracyTextEl,
+        signalHistoryListEl, leaderboardBodyEl,
+        checkSignalBtnText, checkSignalBtnLoader,
+        marketPulseSectionEl, marketPulseStreamListEl, marketPulseStatusEl, toastNotificationEl;
+    
+    const validPairs = [ 'EUR/USD','USD/JPY','GBP/USD','USD/CHF','AUD/USD','USD/CAD','NZD/USD', 'EUR/GBP','EUR/JPY','EUR/CHF','EUR/AUD','EUR/NZD','EUR/CAD', 'GBP/JPY','GBP/CHF','GBP/AUD','GBP/CAD','GBP/NZD', 'AUD/JPY','AUD/NZD','AUD/CAD','CAD/JPY','CAD/CHF','NZD/JPY','NZD/CHF','NZD/CAD', 'XAU/USD', 'XAG/USD', 'USOIL', 'UKOIL', 'BTC/USD', 'ETH/USD', 'LTC/USD', 'XRP/USD', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'TSLA', 'EUR/USD OTC','AUD/CAD OTC','AUD/JPY OTC','AUD/USD OTC','CAD/JPY OTC', 'EUR/GBP OTC','EUR/JPY OTC','GBP/JPY OTC','GBP/USD OTC','USD/CAD OTC','USD/JPY OTC', 'Gold OTC','Silver OTC', 'Bitcoin OTC', 'Ethereum OTC', 'Tesla OTC', 'Amazon OTC', 'US30 OTC', 'SPX500 OTC', 'NAS100 OTC' ];
+    const otcPairs = validPairs.filter(p => p.toUpperCase().endsWith("OTC"));
+    const nonOtcPairs = validPairs.filter(p => !p.toUpperCase().endsWith("OTC"));
+
+    const normalizedPairMap = validPairs.reduce((map, pair) => { const key = pair.replace(/\s*[\/-]\s*|\s+/g, '').toUpperCase(); map[key] = pair; return map; }, {});
+    let lastCheckedMinuteServer = -1; 
+    let liveActivityTimeout = null;
+    let dailyRandomGenerator; 
+    let marketPulseActive = false;
+
+    // --- Utility Functions (Same as before) ---
+    function mulberry32(a) { return function() { var t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; } }
+    function initializeDailyRandomGenerator() { const today = new Date(); const seed = today.getFullYear() * 1000000 + (today.getMonth() + 1) * 10000 + today.getDate() * 100 + (LS_BASE_KEY.length); dailyRandomGenerator = mulberry32(seed); }
+    const getLSItem = (key, defaultValue = null) => { try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : defaultValue; } catch (e) { console.warn(`[LS GET ERR] ${key}:`, e); return defaultValue; } };
+    const setLSItem = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error(`[LS SET ERR] ${key}:`, e); } };
+    const levenshtein = (a,b) => { const dp=Array.from({length:a.length+1},()=>[]);for(let c=0;c<=a.length;c++)dp[c][0]=c;for(let c=0;c<=b.length;c++)dp[0][c]=c;for(let c=1;c<=a.length;c++)for(let d=1;d<=b.length;d++)dp[c][d]=Math.min(dp[c-1][d]+1,dp[c][d-1]+1,dp[c-1][d-1]+(a[c-1]===b[d-1]?0:1));return dp[a.length][b.length]};
+    const getIST = () => {const a=new Date(),b=a.getTime()+6e4*a.getTimezoneOffset();return new Date(b+198e5)};
+    const digitSum = n => n.toString().split('').reduce((s, d) => s + parseInt(d, 10), 0);
+    const computeSignalLogic = (h, m) => { let t=(h+m)+(h+(m-1)); while(t>9)t=digitSum(t); return(t%2)?'AVOID':'REVERSAL'; };
+
+    // --- DOMContentLoaded (Initialization) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeDailyRandomGenerator();
+        // DOM Elements Init (Same as before)
+        accessModal = document.getElementById('accessModal'); disclaimerModal = document.getElementById('disclaimerModal'); hubContainer = document.getElementById('hubContainer');
+        passwordSection = document.getElementById('passwordSection'); accessTypeSelectedSpan = document.getElementById('accessTypeSelected');
+        passwordInputModal = document.getElementById('passwordInputModal'); submitPasswordBtn = document.getElementById('submitPasswordBtn'); passwordError = document.getElementById('passwordError');
+        tempAccessBtn = document.getElementById('tempAccessBtn'); permAccessBtn = document.getElementById('permAccessBtn');
+        usernameInputDisclaimer = document.getElementById('usernameInputDisclaimer'); targetGoalInput = document.getElementById('targetGoalInput');
+        agreeDisclaimerBtn = document.getElementById('agreeDisclaimerBtn'); usernameErrorDisclaimer = document.getElementById('usernameErrorDisclaimer');
+        signalInput = document.getElementById('signalInput'); checkSignalBtn = document.getElementById('checkSignalBtn');
+        checkSignalBtnText = checkSignalBtn.querySelector('.btn-text'); checkSignalBtnLoader = checkSignalBtn.querySelector('.btn-loader');
+        pairActivityIndicatorEl = document.getElementById('pairActivityIndicator'); currentSignalDisplay = document.getElementById('currentSignalDisplay');
+        feedbackButtons = document.getElementById('feedbackButtons'); winBtn = document.getElementById('winBtn'); lossBtn = document.getElementById('lossBtn'); avoidBtn = document.getElementById('avoidBtn');
+        winsCountEl = document.querySelector('#winsCount .value'); lossesCountEl = document.querySelector('#lossesCount .value'); avoidsCountEl = document.querySelector('#avoidsCount .value');
+        accuracyDialValueEl = document.getElementById('accuracyDialValue'); accuracyTextEl = document.getElementById('accuracyText');
+        signalHistoryListEl = document.getElementById('signalHistoryList'); leaderboardBodyEl = document.getElementById('leaderboardBody');
+        marketPulseSectionEl = document.getElementById('marketPulseSection'); marketPulseStreamListEl = document.getElementById('marketPulseStreamList'); marketPulseStatusEl = document.getElementById('marketPulseStatus');
+        toastNotificationEl = document.getElementById('toastNotification');
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.title = `${APP_NAME} - Elite Trader Hub`;
+
+        // Access Control (Same as before - relies on LS_BASE_KEY for reset)
+        function checkPasswordAccess() { const type = getLSItem(LS_KEYS.ACCESS_TYPE); const ts = getLSItem(LS_KEYS.ACCESS_TIMESTAMP); if (type === 'permanent') return true; if (type === 'temporary' && ts && (Date.now() - parseInt(ts) < TEMP_ACCESS_DURATION)) { console.log("Temp access valid."); return true;} if (type === 'temporary' && ts) { console.log("Temp access EXPIRED. Clearing relevant LS keys."); [LS_KEYS.ACCESS_TYPE, LS_KEYS.ACCESS_TIMESTAMP, LS_KEYS.DISCLAIMER_AGREED, LS_KEYS.USERNAME, LS_KEYS.USER_STATS].forEach(k => localStorage.removeItem(k)); } else { console.log("No valid access found or not temp.");} return false; }
+        function proceedToHub() { accessModal.classList.remove('active'); disclaimerModal.classList.remove('active'); hubContainer.style.display = 'flex'; setTimeout(() => hubContainer.classList.add('visible'), 50); initializeHub(); }
+        function showDisclaimerOrHub() { if (getLSItem(LS_KEYS.DISCLAIMER_AGREED)) { proceedToHub(); } else { showDisclaimerModal(); } }
+        function grantPasswordAccess(type) { setLSItem(LS_KEYS.ACCESS_TYPE, type); if (type === 'temporary') setLSItem(LS_KEYS.ACCESS_TIMESTAMP, Date.now()); accessModal.classList.remove('active'); showDisclaimerOrHub(); }
+        function showAccessModal() { hubContainer.style.display = 'none'; hubContainer.classList.remove('visible'); disclaimerModal.classList.remove('active'); accessModal.classList.add('active'); passwordSection.style.display = 'none'; passwordInputModal.value = ''; passwordError.textContent = ''; }
+        function showDisclaimerModal() { accessModal.classList.remove('active'); disclaimerModal.classList.add('active'); const defaultUsername = `Analyst${Math.floor(100 + dailyRandomGenerator() * 899)}`; usernameInputDisclaimer.value = getLSItem(LS_KEYS.USERNAME, defaultUsername); targetGoalInput.value = getLSItem(LS_KEYS.USER_GOAL, ''); usernameErrorDisclaimer.textContent = ''; }
+        
+        let selectedAccessTypeForPassword = '';
+        tempAccessBtn.addEventListener('click', () => { selectedAccessTypeForPassword='temporary'; accessTypeSelectedSpan.textContent='Temporary Pass'; passwordSection.style.display='block'; passwordInputModal.focus(); });
+        permAccessBtn.addEventListener('click', () => { selectedAccessTypeForPassword='permanent'; accessTypeSelectedSpan.textContent='Lifetime Key'; passwordSection.style.display='block'; passwordInputModal.focus(); });
+        passwordInputModal.addEventListener('keydown', (e) => e.key === 'Enter' && submitPasswordBtn.click());
+        submitPasswordBtn.addEventListener('click', () => { const pass = passwordInputModal.value; passwordError.textContent = ''; if (selectedAccessTypeForPassword === 'temporary' && pass === PASSWORDS.TEMP) grantPasswordAccess('temporary'); else if (selectedAccessTypeForPassword === 'permanent' && pass === PASSWORDS.PERM) grantPasswordAccess('permanent'); else passwordError.textContent = `Incorrect ${selectedAccessTypeForPassword || 'key'} credentials.`; passwordInputModal.value = ''; });
+        agreeDisclaimerBtn.addEventListener('click', () => { const username = usernameInputDisclaimer.value.trim(); if (!username) { usernameErrorDisclaimer.textContent = 'Trader Alias cannot be empty.'; return; } if (username.length < 3 || username.length > 20) { usernameErrorDisclaimer.textContent = 'Alias must be 3-20 characters.'; return; } usernameErrorDisclaimer.textContent = ''; setLSItem(LS_KEYS.USERNAME, username); setLSItem(LS_KEYS.USER_GOAL, targetGoalInput.value.trim()); setLSItem(LS_KEYS.DISCLAIMER_AGREED, true); proceedToHub(); });
+
+        if (checkPasswordAccess()) { console.log("Access check PASSED."); showDisclaimerOrHub(); } else { console.log("Access check FAILED. Showing password modal."); showAccessModal(); }
+    });
+
+    // --- Hub Initialization & Core Logic ---
+    function initializeHub() { /* Same as before */
+        loadUserStats(); loadSignalHistory(); generateOrLoadLeaderboard(); restoreCurrentSignalState(); 
+        updatePairActivityIndicator(); startLiveActivityStream();
+        checkSignalBtn.addEventListener('click', handleCheckSignal);
+        signalInput.addEventListener('input', () => { setLSItem(LS_KEYS.LAST_INPUT_TEXT, signalInput.value); });
+        winBtn.addEventListener('click', () => handleFeedback('win'));
+        lossBtn.addEventListener('click', () => handleFeedback('loss'));
+        avoidBtn.addEventListener('click', () => handleFeedback('avoid'));
+        const lastInput = getLSItem(LS_KEYS.LAST_INPUT_TEXT, ''); if(lastInput) signalInput.value = lastInput;
+    }
+
+    function setButtonLoading(isLoading) { /* Same as before */ if (isLoading) { checkSignalBtnText.style.display = 'none'; checkSignalBtnLoader.style.display = 'inline-flex'; checkSignalBtn.disabled = true; } else { checkSignalBtnText.style.display = 'inline-block'; checkSignalBtnLoader.style.display = 'none'; } }
+    function displaySignalResultInUI(text, colorClass, predictionText, isPendingFeedback = false) { /* Same as before */
+        currentSignalDisplay.innerHTML = `<div class="signal-text">${text.replace(/\n/g, '<br>')}</div><div class="signal-prediction">${predictionText || ''}</div>${isPendingFeedback ? '<p class="pending-feedback-msg">Awaiting your feedback to log trade.</p>' : ''}`;
+        currentSignalDisplay.className = 'visible'; currentSignalDisplay.classList.add(colorClass);
+        if (isPendingFeedback) { feedbackButtons.classList.add('visible'); signalInput.disabled = true; checkSignalBtn.disabled = true; } else { feedbackButtons.classList.remove('visible'); signalInput.disabled = false; checkSignalBtn.disabled = false; }
+    }
+    function clearSignalResultDisplay() { /* Same as before */ currentSignalDisplay.classList.remove('visible', 'green', 'yellow', 'red'); currentSignalDisplay.innerHTML = ''; feedbackButtons.classList.remove('visible'); signalInput.disabled = false; signalInput.focus(); checkSignalBtn.disabled = false; setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, null); }
+    function restoreCurrentSignalState() { /* Same as before */ const state = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE); if (state && state.status === 'pending_user_feedback') { displaySignalResultInUI( `${state.timePart}\n${state.displayPair}`, state.predictionColor, `${state.prediction} ${state.binaryScore}`, true ); signalInput.value = state.originalInput || ''; signalInput.disabled = true; checkSignalBtn.disabled = true; checkSignalBtnText.textContent = "Resolve Current Signal"; } else { signalInput.disabled = false; checkSignalBtn.disabled = false; checkSignalBtnText.textContent = "Process Signal"; const lastInput = getLSItem(LS_KEYS.LAST_INPUT_TEXT, ''); if(lastInput && !signalInput.value) signalInput.value = lastInput; } }
+    function handleCheckSignal() { /* Same logic as before with OTC fix */
+        const currentSignalState = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE);
+        if (currentSignalState && currentSignalState.status === 'pending_user_feedback') { updateUserStatsAndSignalHistory('avoid', currentSignalState); setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, { ...currentSignalState, status: 'resolved_auto_avoid' });}
+        const istDate = getIST(); const currentMinute = istDate.getMinutes();
+        if (currentMinute === lastCheckedMinuteServer) { displaySignalResultInUI('⏳ Server Syncing... Try next minute.', 'yellow', 'RATE LIMIT'); return; }
+        const rawInput = signalInput.value.trim(); if (!rawInput) { displaySignalResultInUI('❗ Input empty. Provide a signal.', 'red', 'VALIDATION ERR'); return; }
+        const parts = rawInput.split(/\s+/); if (parts.length < 2) { displaySignalResultInUI('❗ Invalid format. Use: HH:MM PAIR [OTC]', 'red', 'FORMAT ERR'); return; }
+        const [timePart, ...pairParts] = parts; const [hStr, mStr] = timePart.split(':');
+        const h = parseInt(hStr, 10), m = parseInt(mStr, 10);
+        if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) { displaySignalResultInUI('❗ Invalid time (HH:MM 24-hr).', 'red', 'TIME ERR'); return; }
+        setButtonLoading(true); currentSignalDisplay.classList.remove('visible', 'green', 'yellow', 'red');
+
+        setTimeout(() => {
+            let isOTCUser = pairParts.length > 0 && pairParts[pairParts.length-1].toUpperCase() === 'OTC';
+            let pairNameUser = pairParts.slice(0, isOTCUser ? pairParts.length - 1 : pairParts.length).join('');
+            const normalizedUserInput = pairNameUser.replace(/[\/-]/g, '').toUpperCase();
+            const searchKey = normalizedUserInput + (isOTCUser ? 'OTC' : '');
+            let bestMatch = { distance: Infinity, value: null };
+            for (const key in normalizedPairMap) { const dist = levenshtein(searchKey, key); if (dist < bestMatch.distance) { bestMatch = { distance: dist, value: normalizedPairMap[key] }; } if (dist === 0) break; }
+            let finalPairName = bestMatch.value;
+
+            if (!finalPairName || bestMatch.distance > 2) { displaySignalResultInUI(`❗ Asset <b style="color:var(--accent-secondary);">${pairParts.join(' ')}</b> not found.`, 'red', 'ASSET UNKNOWN'); setButtonLoading(false); signalInput.disabled = false; checkSignalBtnText.textContent = "Process Signal"; checkSignalBtn.disabled = false; return; }
+            
+            if(isOTCUser && !finalPairName.toUpperCase().endsWith("OTC")){ const explicitOtcKey = normalizedUserInput + "OTC"; if(normalizedPairMap[explicitOtcKey]){ finalPairName = normalizedPairMap[explicitOtcKey]; } else { finalPairName = finalPairName + " OTC"; }}
+            finalPairName = finalPairName.replace(/(OTC\s*)+$/i, "OTC").trim();
+
+            const inputDate = new Date(istDate); inputDate.setHours(h, m, 0, 0);
+            const timeDiffMins = (inputDate.getTime() - istDate.getTime()) / 60000;
+            if (timeDiffMins < -1.5 || timeDiffMins > 2.5) { displaySignalResultInUI('❗ Signal time out of range.', 'red', 'TIME RANGE ERR'); } else {
+                const pSignal = computeSignalLogic(h, m); const altH = h < 12 ? h + 12 : h - 12; const aSignal = computeSignalLogic(altH, m);
+                const binP = pSignal === 'REVERSAL' ? 1 : 0; const binA = aSignal === 'REVERSAL' ? 1 : 0;
+                let predColor, finalSignalText;
+                if (binP && binA) { predColor = 'green'; finalSignalText = 'HIGH-CONF REVERSAL'; } else if (binP && !binA) { predColor = 'yellow'; finalSignalText = 'MODERATE REVERSAL'; } else if (!binP && binA) { predColor = 'red'; finalSignalText = 'CONFLICTING / AVOID'; } else { predColor = 'green'; finalSignalText = 'STRONG CONTINUATION'; }
+                const binaryScore = `[P:${binP}/A:${binA}]`;
+                const newSignalState = { originalInput: rawInput, text: rawInput, timePart: timePart, displayPair: finalPairName, prediction: finalSignalText, predictionColor: predColor, binaryScore: binaryScore, status: 'pending_user_feedback', timestamp: Date.now() };
+                setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, newSignalState);
+                displaySignalResultInUI( `${timePart}\n${finalPairName}`, predColor, `${finalSignalText} ${binaryScore}`, true );
+                lastCheckedMinuteServer = currentMinute; checkSignalBtnText.textContent = "Resolve Current Signal";
+            }
+            setButtonLoading(false); updatePairActivityIndicator();
+        }, 1100);
+    }
+
+    // --- REWRITTEN CORE STATS LOGIC (Same as previous good version) ---
+    function handleFeedback(outcome) {
+        console.log(`[FEEDBACK DEBUG] --- Initiating feedback for: ${outcome.toUpperCase()} ---`);
+        const currentSignal = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE);
+        console.log("[FEEDBACK DEBUG] Retrieved currentSignalState from LS:", JSON.stringify(currentSignal));
+
+        if (!currentSignal) { console.error("[FEEDBACK DEBUG] CRITICAL: No currentSignal object found. Feedback cannot be processed."); showToastNotification("Error: No active signal data. Try re-entering the signal."); clearSignalResultDisplay(); return; }
+        if (currentSignal.status !== 'pending_user_feedback') { console.warn(`[FEEDBACK DEBUG] Signal status is '${currentSignal.status}', not 'pending_user_feedback'. Feedback for '${outcome}' ignored.`); if (feedbackButtons.classList.contains('visible')) { clearSignalResultDisplay(); } return;  }
+        
+        console.log(`[FEEDBACK DEBUG] Valid signal state. Processing feedback for: "${currentSignal.originalInput}", Chosen Outcome: "${outcome}"`);
+        updateUserStatsAndSignalHistory(outcome, currentSignal); // This is where the counting happens
+        addUserTradeToLiveStream(currentSignal, outcome); 
+        clearSignalResultDisplay(); setLSItem(LS_KEYS.LAST_INPUT_TEXT, ''); if(signalInput) signalInput.value = ''; if(checkSignalBtnText) checkSignalBtnText.textContent = "Process Signal"; if(checkSignalBtn) checkSignalBtn.disabled = false;
+        console.log(`[FEEDBACK DEBUG] --- Feedback processing for ${outcome.toUpperCase()} COMPLETE ---`);
+    }
+
+    function updateUserStatsAndSignalHistory(outcome, signalData) {
+        console.log(`[STATS DEBUG] --- Updating stats for outcome: ${outcome.toUpperCase()} ---`);
+        let stats = getLSItem(LS_KEYS.USER_STATS);
+        
+        // Aggressively ensure stats is a valid object with all necessary keys as numbers
+        if (typeof stats !== 'object' || stats === null || Array.isArray(stats)) {
+            console.warn("[STATS DEBUG] Stats object from LS was invalid, null, or an array. Re-initializing to default structure.");
+            stats = { wins: 0, losses: 0, avoids: 0, totalSignals: 0 };
+        } else {
+            stats.wins = Number(stats.wins) || 0;
+            stats.losses = Number(stats.losses) || 0;
+            stats.avoids = Number(stats.avoids) || 0;
+            stats.totalSignals = Number(stats.totalSignals) || 0;
+        }
+        
+        console.log("[STATS DEBUG] Stats object BEFORE update (after sanitization):", JSON.parse(JSON.stringify(stats)));
+
+        // Direct increment based on the outcome string
+        if (outcome === 'win') {
+            stats.wins++;
+            console.log("[STATS DEBUG] Incremented wins. New wins:", stats.wins);
+        } else if (outcome === 'loss') {
+            stats.losses++;
+            console.log("[STATS DEBUG] Incremented losses. New losses:", stats.losses);
+        } else if (outcome === 'avoid') {
+            stats.avoids++;
+            console.log("[STATS DEBUG] Incremented avoids. New avoids:", stats.avoids);
+        } else {
+            console.error(`[STATS DEBUG] CRITICAL ERROR: Unknown outcome type "${outcome}". Stats not updated for this specific outcome count.`);
+            showToastNotification(`Internal Error: Unknown outcome "${outcome}".`);
+            // Do not increment totalSignals if the specific outcome is invalid in this branch.
+            // However, totalSignals is incremented below, assuming the feedback attempt itself was a "signal interaction".
+        }
+        
+        stats.totalSignals++; 
+        console.log("[STATS DEBUG] Stats object AFTER update:", JSON.parse(JSON.stringify(stats)));
+        
+        try { 
+            setLSItem(LS_KEYS.USER_STATS, stats); 
+            console.log("[STATS DEBUG] Stats successfully saved to localStorage.");
+        } catch (e) { 
+            console.error("[STATS DEBUG] CRITICAL ERROR saving stats to localStorage:", e); 
+            showToastNotification("Error: Could not save your performance data.");
+        }
+        
+        updateStatsDisplay(stats); 
+        let history = getLSItem(LS_KEYS.SIGNAL_HISTORY, []);
+        history.unshift({ text: signalData.originalInput || signalData.text, prediction: `${signalData.prediction} ${signalData.binaryScore}`, outcome: outcome, timestamp: signalData.timestamp || Date.now() });
+        if (history.length > MAX_HISTORY_ITEMS) history.pop(); 
+        setLSItem(LS_KEYS.SIGNAL_HISTORY, history); renderSignalHistory(history);
+        checkUserProgress(stats); 
+        console.log(`[STATS DEBUG] --- Stats and history update for ${outcome.toUpperCase()} COMPLETE ---`);
+    }
+
+    // --- Other UI Update Functions (loadUserStats, updateStatsDisplay, etc. - largely same as before) ---
+    function loadUserStats() { /* Same */ const stats = getLSItem(LS_KEYS.USER_STATS, { wins: 0, losses: 0, avoids: 0, totalSignals: 0 }); updateStatsDisplay(stats); }
+    function updateStatsDisplay(stats) { /* Same */ winsCountEl.textContent = stats.wins; lossesCountEl.textContent = stats.losses; avoidsCountEl.textContent = stats.avoids; const totalRelevant = stats.wins + stats.losses; const winRate = totalRelevant > 0 ? (stats.wins / totalRelevant) * 100 : 0; accuracyTextEl.textContent = `${winRate.toFixed(0)}%`; const circumference = 2 * Math.PI * 15.9155; const offset = circumference - (winRate / 100) * circumference; accuracyDialValueEl.style.strokeDasharray = `${circumference}`; accuracyDialValueEl.style.strokeDashoffset = offset; }
+    function loadSignalHistory() { /* Same */ const history = getLSItem(LS_KEYS.SIGNAL_HISTORY, []); renderSignalHistory(history); }
+    function renderSignalHistory(history) { /* Same */ if (!history || history.length === 0) { signalHistoryListEl.innerHTML = `<li style="opacity:1; text-align:center; color: var(--text-medium)">Your trade log is empty. Start analyzing!</li>`; return; } signalHistoryListEl.innerHTML = history.map((item, index) => ` <li style="animation-delay: ${index * 0.05}s"> <span>${item.text.length > 22 ? item.text.substring(0,19)+'...' : item.text} <em style="font-size:0.75em; color:var(--text-medium);opacity:0.65">(${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})</em></span> <span class="outcome-${item.outcome}">${item.outcome.toUpperCase().replace('_', ' ')}</span> </li> `).join(''); }
+    function updatePairActivityIndicator() { /* Same */ if(pairActivityIndicatorEl) { pairActivityIndicatorEl.textContent = `~${Math.floor(dailyRandomGenerator() * 250) + 100} traders globally on similar assets.`; } } 
+    function checkUserProgress(stats) { /* Same */ const totalSignals = stats.totalSignals; if (totalSignals === 10 || totalSignals === 15) { showToastNotification(`🎉 Milestone! ${totalSignals} trades logged. Showing Top 100 potential!`); } else if (totalSignals === 25 || totalSignals === 30) { showToastNotification(`🏆 Elite! ${totalSignals} trades analyzed. Climbing to Top 30 status!`); } }
+    function showToastNotification(message) { /* Same */ if (!toastNotificationEl) return; toastNotificationEl.textContent = message; toastNotificationEl.classList.add('show'); setTimeout(() => { toastNotificationEl.classList.remove('show'); }, 4800); }
+
+    // --- Leaderboard Data (Same as before) ---
+    const indianTraderPersonas = [ "Market Gurukul", "Paisa Profits", "Booming Bulls", "Stock Master Bharat", "Nifty Navigator", "Options ka Raja", "TradeWithSahil", "Gaurav ProTrader", "Rakesh Trades", "Anil Views Fan", "Trading Chanakya", "Profit Pundit", "Ravi Kumar FX", "Priya Sharma Capital", "Amit Singh Signals", "Sneha Patel Analytics", "Vikram Gupta Edge", "Anjali Reddy Alerts", "Mohan Patel Trades", "Suresh Kumar Options" ];
+    const globalTraderPersonas = [ "AlphaStream", "Zenith Signals", "QuantumLeapFX", "NovaCharts", "ApexTrading", "TheSignalyst", "Velocity Picks", "Momentum IO", "Serenity FX", "FXOracle", "ChartWhisperer", "PixelTrader", "NeonGains", "HeliosMarket", "CryptoCrusader" ];
+    const countryFlags = ["🇮🇳", "🇺🇸", "🇬🇧", "🇨🇦", "🇦🇺", "🇩🇪", "🇯🇵", "🇧🇷", "🇿🇦", "🇸🇬", "🇫🇷", "🇳🇱"];
+    function generateLeaderboardData() { /* Same as before */
+        const data = []; const usedNames = new Set(); const numIndian = Math.floor(10 * 0.6);
+        let indianCount = 0; const availableIndianNames = [...indianTraderPersonas]; const availableGlobalNames = [...globalTraderPersonas];
+        for (let i = 0; i < 10; i++) {
+            let name, flag;
+            const useIndian = (indianCount < numIndian && dailyRandomGenerator() < 0.8) || (i >= 10 - (numIndian - indianCount));
+            if (useIndian && availableIndianNames.length > 0) { const nameIndex = Math.floor(dailyRandomGenerator() * availableIndianNames.length); name = availableIndianNames.splice(nameIndex, 1)[0]; flag = "🇮🇳"; indianCount++; } 
+            else if (availableGlobalNames.length > 0) { const nameIndex = Math.floor(dailyRandomGenerator() * availableGlobalNames.length); name = availableGlobalNames.splice(nameIndex, 1)[0]; flag = countryFlags[Math.floor(dailyRandomGenerator() * (countryFlags.length -1)) + 1]; } 
+            else { name = `Trader${Math.floor(100+dailyRandomGenerator()*900)}`; flag = countryFlags[Math.floor(dailyRandomGenerator()*countryFlags.length)];}
+            if(usedNames.has(name) && (availableIndianNames.length > 0 || availableGlobalNames.length > 0)) { i--; continue; } usedNames.add(name);
+            const totalTrades = Math.floor(dailyRandomGenerator() * 300) + 100; const accuracy = (dailyRandomGenerator() * 26 + 68); // Range 68-94%
+            data.push({ rank: i + 1, name: name, flag: flag, trades: totalTrades, winRate: accuracy.toFixed(1) });
+        }
+        data.sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate) || b.trades - a.trades);
+        data.forEach((item, index) => item.rank = index + 1); return data;
+    }
+    function generateOrLoadLeaderboard() { /* Same */ const today = new Date().toDateString(); const storedDate = getLSItem(LS_KEYS.LEADERBOARD_DATE); let leaderboardData = getLSItem(LS_KEYS.LEADERBOARD_DATA); if (storedDate !== today || !leaderboardData || leaderboardData.length === 0) { leaderboardData = generateLeaderboardData(); setLSItem(LS_KEYS.LEADERBOARD_DATA, leaderboardData); setLSItem(LS_KEYS.LEADERBOARD_DATE, today); } renderLeaderboard(leaderboardData); }
+    function renderLeaderboard(data) { /* Same */ if (!data || !leaderboardBodyEl) return; leaderboardBodyEl.innerHTML = data.map(trader => `<tr> <td class="rank">${trader.rank}</td> <td class="name"><span class="flag">${trader.flag}</span> ${trader.name}</td> <td>${trader.trades}</td> <td class="accuracy" style="color: ${parseFloat(trader.winRate) >= 88 ? 'var(--green)' : parseFloat(trader.winRate) >= 80 ? 'var(--yellow)' : 'var(--text-light)'}">${trader.winRate}%</td> </tr>`).join(''); }
+
+    // --- Market Pulse Logic (75% OTC, Specific Timing, Name Diversity, No Next Update Time Visible, Indian Flag for User) ---
+    const liveStreamStrategies = ["ScalpPro", "TrendFlow", "VolatilityBreak", "MeanRevert", "FibPivot", "HarmonicScan", "OrderBlock+", "IchimokuWave"];
+    const liveStreamOutcomes = [ { result: "WIN", emoji: "🚀", class: "pulse-win", weight: 70 }, { result: "AVOID", emoji: "🧐", class: "pulse-avoid", weight: 22 }, { result: "LOSS", emoji: "📉", class: "pulse-loss", weight: 8 } ];
+    const weightedOutcomesArray = liveStreamOutcomes.reduce((acc, outcome) => acc.concat(Array(outcome.weight).fill(outcome)), []);
+    
+    let starPulseTradersPool = []; 
+    let generalPulseTradersPool = [];
+
+    function initializePulseTraderPools() { /* Same, ensures diversity */
+        const leaderboardData = getLSItem(LS_KEYS.LEADERBOARD_DATA, generateLeaderboardData());
+        starPulseTradersPool = leaderboardData.slice(0, 3).map(t => ({name: t.name, flag: t.flag})); 
+        if (starPulseTradersPool.length === 0) starPulseTradersPool.push({name:"ProTrader Elite", flag:"🌟"}); 
+
+        const allPersonas = [...new Set([...indianTraderPersonas, ...globalTraderPersonas])]; 
+        generalPulseTradersPool = allPersonas.map(name => {
+            const isIndian = indianTraderPersonas.includes(name);
+            const flag = isIndian ? "🇮🇳" : countryFlags[Math.floor(dailyRandomGenerator() * (countryFlags.length -1)) +1]; 
+            return {name, flag};
+        });
+         if (generalPulseTradersPool.length === 0) generalPulseTradersPool.push({name:"Market Maven", flag:"🌍"});
+    }
+
+
+    function generateDeterministicLiveActivity(count = 80) { /* Same, ensures 75% OTC & diverse names */
+        let cache = [];
+        if(starPulseTradersPool.length === 0 || generalPulseTradersPool.length === 0) initializePulseTraderPools();
+
+        for (let i = 0; i < count; i++) {
+            let traderProfile;
+            // MODIFIED: 70% general, 30% star names for diversity
+            if (dailyRandomGenerator() < 0.7 && generalPulseTradersPool.length > 0) { 
+                traderProfile = generalPulseTradersPool[Math.floor(dailyRandomGenerator() * generalPulseTradersPool.length)];
+            } else if (starPulseTradersPool.length > 0) {
+                traderProfile = starPulseTradersPool[Math.floor(dailyRandomGenerator() * starPulseTradersPool.length)];
+            } else { 
+                 traderProfile = {name: "Analyst AI", flag: "🤖"}; // Ultimate fallback
+            }
+
+            const user = traderProfile.name; 
+            const flag = traderProfile.flag;
+            
+            let asset;
+            if (dailyRandomGenerator() < 0.75 && otcPairs.length > 0) { asset = otcPairs[Math.floor(dailyRandomGenerator() * otcPairs.length)]; } 
+            else if (nonOtcPairs.length > 0) { asset = nonOtcPairs[Math.floor(dailyRandomGenerator() * nonOtcPairs.length)]; } 
+            else { asset = "EUR/USD OTC"; }
+            asset = asset.replace(/(OTC\s*)+$/i, "OTC").trim();
+
+            const outcome = weightedOutcomesArray[Math.floor(dailyRandomGenerator() * weightedOutcomesArray.length)];
+            const strategy = liveStreamStrategies[Math.floor(dailyRandomGenerator() * liveStreamStrategies.length)];
+            const timestamp = Date.now() - Math.floor(dailyRandomGenerator() * 18 * 60000); 
+            cache.push({ user, flag, asset, outcome, strategy, timestamp, type: 'fake' });
+        }
+        return cache.sort((a,b) => b.timestamp - a.timestamp);
+    }
+    
+    let dailyActivityCache = []; let activityCacheIndex = 0;
+
+    function addPulseActivityItemDOM(itemData = null) { /* Same, ensures class names match CSS */
+        if (!marketPulseStreamListEl) return; let item;
+        if (itemData) { item = itemData; } 
+        else { if (activityCacheIndex >= dailyActivityCache.length) activityCacheIndex = 0; item = dailyActivityCache[activityCacheIndex++]; if (!item) return; }
+        const li = document.createElement('li'); li.classList.add('market-pulse-item'); if (item.type === 'user') li.classList.add('user-trade-pulse-highlight');
+        li.innerHTML = `<div class="pulse-user-flag"><span class="flag">${item.flag}</span><span class="pulse-user">${item.user}</span></div><div class="pulse-details"><span class="pulse-pair">${item.asset}</span> <span class="pulse-strategy">(${item.strategy})</span></div><div class="pulse-outcome"><span class="${item.outcome.class}">${item.outcome.result} ${item.outcome.emoji}</span></div>`;
+        marketPulseStreamListEl.prepend(li); if (marketPulseStreamListEl.children.length > MAX_LIVE_ACTIVITY_ITEMS) { marketPulseStreamListEl.removeChild(marketPulseStreamListEl.lastChild); }
+    }
+    function addUserTradeToLiveStream(signalData, outcomeType) { // ADDED Indian Flag for User
+        if (!marketPulseStreamListEl) return; 
+        const username = getLSItem(LS_KEYS.USERNAME, "You"); 
+        const asset = signalData.displayPair; 
+        const outcomeDetails = liveStreamOutcomes.find(o => o.result.toLowerCase() === outcomeType) || liveStreamOutcomes.find(o => o.result === "AVOID"); 
+        addPulseActivityItemDOM({ user: username, flag: "🇮🇳", asset: asset, outcome: outcomeDetails, strategy: "Your Input", timestamp: Date.now(), type: 'user' }); 
+    }
+    
+    function updateMarketPulseStatusTextOnly() { // MODIFIED: Hides "Next update at..."
+        if (!marketPulseStatusEl || !marketPulseSectionEl) return;
+        const now = getIST(); const seconds = now.getSeconds();
+        let statusText = ""; let isActiveNow = false;
+        
+        if ((seconds >= 0 && seconds < 15) || (seconds >= 50 && seconds < 60)) { isActiveNow = true; statusText = "(Active)"; marketPulseSectionEl.classList.remove('inactive'); } 
+        else { isActiveNow = false; statusText = "(Syncing...)"; marketPulseSectionEl.classList.add('inactive'); }
+        marketPulseStatusEl.textContent = statusText; return isActiveNow;
+    }
+
+    function scheduleLiveActivityUpdates() { /* Same logic as before for timing */
+        if (liveActivityTimeout) clearTimeout(liveActivityTimeout);
+        marketPulseActive = updateMarketPulseStatusTextOnly(); 
+
+        if (marketPulseActive) { addPulseActivityItemDOM(); } 
+
+        function pulseLoop() {
+            marketPulseActive = updateMarketPulseStatusTextOnly();
+            if (marketPulseActive) {
+                addPulseActivityItemDOM();
+                liveActivityTimeout = setTimeout(pulseLoop, 2200 + dailyRandomGenerator() * 1800); 
+            } else {
+                const now = getIST(); const seconds = now.getSeconds();
+                let delayToNextActive;
+                if (seconds >= 15 && seconds < 50) { delayToNextActive = (50 - seconds) * 1000 - now.getMilliseconds(); } 
+                else { delayToNextActive = (60 - seconds) * 1000 - now.getMilliseconds(); }
+                if (delayToNextActive <= 0) delayToNextActive = 500;
+                liveActivityTimeout = setTimeout(pulseLoop, delayToNextActive);
+            }
+        }
+        const initialDelay = 1000 - (new Date().getMilliseconds());
+        liveActivityTimeout = setTimeout(pulseLoop, initialDelay > 0 ? initialDelay : 1000);
+    }
+
+    function startLiveActivityStream() { /* Same logic as before */
+        if (marketPulseSectionEl) {
+            marketPulseSectionEl.style.display = 'block';
+            initializePulseTraderPools(); 
+            const todayStr = new Date().toDateString();
+            if (getLSItem(LS_KEYS.LIVE_ACTIVITY_DATE) === todayStr && getLSItem(LS_KEYS.LIVE_ACTIVITY_CACHE)?.length > 0) { dailyActivityCache = getLSItem(LS_KEYS.LIVE_ACTIVITY_CACHE); } 
+            else { dailyActivityCache = generateDeterministicLiveActivity(80); setLSItem(LS_KEYS.LIVE_ACTIVITY_CACHE, dailyActivityCache); setLSItem(LS_KEYS.LIVE_ACTIVITY_DATE, todayStr); }
+            if (dailyActivityCache.length === 0) { dailyActivityCache = generateDeterministicLiveActivity(80); } 
+            activityCacheIndex = Math.floor(dailyRandomGenerator() * Math.min(20, dailyActivityCache.length)); 
+            if (marketPulseStreamListEl) marketPulseStreamListEl.innerHTML = '';
+            scheduleLiveActivityUpdates();
+        }
+    }
+
+  </script>
+</body>
+</html>
