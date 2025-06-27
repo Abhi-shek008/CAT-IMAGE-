@@ -592,7 +592,7 @@
                 const pSignal = computeSignalLogic(h, m); const altH = h < 12 ? h + 12 : h - 12; const aSignal = computeSignalLogic(altH, m);
                 const binP = pSignal === 'REVERSAL' ? 1 : 0; const binA = aSignal === 'REVERSAL' ? 1 : 0;
                 let predColor, finalSignalText;
-                if (binP && binA) { predColor = 'green'; finalSignalText = 'HIGH-CONF REVERSAL'; } else if (binP && !binA) { predColor = 'yellow'; finalSignalText = 'REVERSAL'; } else if (!binP && binA) { predColor = 'red'; finalSignalText = 'CONFLICTING / AVOID'; } else { predColor = 'green'; finalSignalText = 'STRONG REVERSAL'; }
+                if (binP && binA) { predColor = 'green'; finalSignalText = 'STRONG REVERSAL'; } else if (binP && !binA) { predColor = 'green'; finalSignalText = 'REVERSAL'; } else if (!binP && binA) { predColor = 'red'; finalSignalText = '50% - AVOID'; } else { predColor = 'red'; finalSignalText = 'STRONG AVOID'; }
                 const binaryScore = `[P:${binP}/A:${binA}]`;
                 const newSignalState = { originalInput: rawInput, text: rawInput, timePart: timePart, displayPair: finalPairName, prediction: finalSignalText, predictionColor: predColor, binaryScore: binaryScore, status: 'pending_user_feedback', timestamp: Date.now() };
                 setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, newSignalState);
