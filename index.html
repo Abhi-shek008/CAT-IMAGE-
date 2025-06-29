@@ -140,7 +140,7 @@
       animation: fadeInSmooth 0.35s ease-out; 
       box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.2); 
       border-left: 4px solid;
-      position: relative; /* ADDED for loading text positioning */
+      position: relative; 
     } 
     #currentSignalDisplay.visible { display: block; }
     #currentSignalDisplay.green { border-left-color: var(--green); box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.2), 0 0 15px var(--green); } 
@@ -155,7 +155,6 @@
       to { opacity: 1; transform: translateY(0) scale(1); } 
     } 
 
-    /* ADDED: Loading Text Animation */
     #currentSignalDisplay .loading-text-item {
         font-family: var(--primary-font);
         font-size: 0.9rem;
@@ -300,7 +299,7 @@
   </style>
 </head>
 <body>
-    <!-- HTML Structure is unchanged -->
+    <!-- HTML is Unchanged -->
     <!-- Password Modal -->
   <div id="accessModal" class="modal-overlay">
     <div class="modal-content">
@@ -311,10 +310,14 @@
         <button id="permAccessBtn" class="access-type-btn" data-type="permanent">Lifetime Key</button>
       </div>
       <div id="passwordSection" style="display: none;">
-        <label for="passwordInputModal">Enter <span id="accessTypeSelected"></span> Credentials:</label>
-        <input type="password" id="passwordInputModal" placeholder="Your Access Key...">
-        <button id="submitPasswordBtn" class="modal-action-btn" style="width:100%; margin-top:0.4rem;">Verify & Enter</button> 
-        <p id="passwordError" class="error-message"></p>
+        <!-- MODIFIED: Wrapped in form for autofill -->
+        <form onsubmit="return false;">
+            <input type="text" id="usernameInputHidden" name="username" autocomplete="username" style="display: none;">
+            <label for="passwordInputModal">Enter <span id="accessTypeSelected"></span> Credentials:</label>
+            <input type="password" id="passwordInputModal" name="password" autocomplete="current-password" placeholder="Your Access Key...">
+            <button id="submitPasswordBtn" class="modal-action-btn" style="width:100%; margin-top:0.4rem;">Verify & Enter</button>
+            <p id="passwordError" class="error-message"></p>
+        </form>
       </div>
       <p class="modal-note">A Temporary Pass grants 3-day access. Unlock full, unrestricted potential with a Lifetime Key.</p>
     </div>
@@ -458,7 +461,7 @@
 
     // --- DOM Elements --- 
     let accessModal, disclaimerModal, hubContainer, passwordSection, accessTypeSelectedSpan,
-        passwordInputModal, submitPasswordBtn, passwordError, tempAccessBtn, permAccessBtn,
+        passwordInputModal, submitPasswordBtn, passwordError, tempAccessBtn, permAccessBtn, usernameInputHidden,
         usernameInputDisclaimer, targetGoalInput, agreeDisclaimerBtn, usernameErrorDisclaimer,
         signalInput, checkSignalBtn, currentSignalDisplay, feedbackButtons,
         winBtn, lossBtn, avoidBtn, pairActivityIndicatorEl,
@@ -467,7 +470,6 @@
         checkSignalBtnText, checkSignalBtnLoader,
         marketPulseSectionEl, marketPulseStreamListEl, marketPulseStatusEl, toastNotificationEl;
     
-    // --- New Loading Animation Variables ---
     const loadingPhrases = [
         "Analyzing Market Volatility...",
         "Scanning Key Support & Resistance...",
@@ -479,7 +481,28 @@
     ];
     let loadingInterval = null;
 
-    const validPairs = [ 'EUR/USD','USD/JPY','GBP/USD','USD/CHF','AUD/USD','USD/CAD','NZD/USD', 'EUR/GBP','EUR/JPY','EUR/CHF','EUR/AUD','EUR/NZD','EUR/CAD', 'GBP/JPY','GBP/CHF','GBP/AUD','GBP/CAD','GBP/NZD', 'AUD/JPY','AUD/NZD','AUD/CAD','CAD/JPY','CAD/CHF','NZD/JPY','NZD/CHF','NZD/CAD', 'XAU/USD', 'XAG/USD', 'USOIL', 'UKOIL', 'BTC/USD', 'ETH/USD', 'LTC/USD', 'XRP/USD', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'TSLA', 'EUR/USD OTC','AUD/CAD OTC','AUD/JPY OTC','AUD/USD OTC','CAD/JPY OTC', 'EUR/GBP OTC','EUR/JPY OTC','GBP/JPY OTC','GBP/USD OTC','USD/CAD OTC','USD/JPY OTC', 'Gold OTC','Silver OTC', 'Bitcoin OTC', 'Ethereum OTC', 'Tesla OTC', 'Amazon OTC', 'US30 OTC', 'SPX500 OTC', 'NAS100 OTC' ];
+    const validPairs = [...new Set([ // Use Set to automatically remove duplicates
+        'EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD',
+        'EUR/GBP', 'EUR/JPY', 'EUR/CHF', 'EUR/AUD', 'EUR/NZD', 'EUR/CAD', 'GBP/JPY',
+        'GBP/CHF', 'GBP/AUD', 'GBP/CAD', 'GBP/NZD', 'AUD/JPY', 'AUD/NZD', 'AUD/CAD',
+        'CAD/JPY', 'CAD/CHF', 'NZD/JPY', 'NZD/CHF', 'NZD/CAD', 'XAU/USD', 'XAG/USD',
+        'USOIL', 'UKOIL', 'BTC/USD', 'ETH/USD', 'LTC/USD', 'XRP/USD', 'AAPL', 'MSFT',
+        'AMZN', 'GOOGL', 'TSLA', 'EUR/USD OTC', 'AUD/CAD OTC', 'AUD/JPY OTC',
+        'AUD/USD OTC', 'CAD/JPY OTC', 'EUR/GBP OTC', 'EUR/JPY OTC', 'GBP/JPY OTC',
+        'GBP/USD OTC', 'USD/CAD OTC', 'USD/JPY OTC', 'Gold OTC', 'Silver OTC',
+        'Bitcoin OTC', 'Ethereum OTC', 'Tesla OTC', 'Amazon OTC', 'US30 OTC',
+        'SPX500 OTC', 'NAS100 OTC', 'AED/CNY OTC', 'AUD/CHF OTC', 'AUD/NZD OTC',
+        'CAD/CHF OTC', 'CHF/JPY OTC', 'EUR/CHF OTC', 'EUR/TRY OTC', 'MAD/USD OTC',
+        'NGN/USD OTC', 'USD/BDT OTC', 'USD/CLP OTC', 'USD/COP OTC', 'USD/DZD OTC',
+        'USD/EGP OTC', 'USD/IDR OTC', 'USD/PKR OTC', 'USD/RUB OTC', 'USD/SGD OTC',
+        'USD/THB OTC', 'USD/VND OTC', 'YER/USD OTC', 'QAR/CNY OTC', 'USD/MXN OTC',
+        'EUR/HUF OTC', 'KES/USD OTC', 'ZAR/USD OTC', 'USD/PHP OTC', 'EUR/RUB OTC',
+        'NZD/JPY OTC', 'GBP/AUD OTC', 'USD/INR OTC', 'BHD/CNY OTC', 'SAR/CNY OTC',
+        'USD/BRL OTC', 'USD/CNH OTC', 'UAH/USD OTC', 'TND/USD OTC', 'EUR/NZD OTC',
+        'JOD/CNY OTC', 'USD/CHF OTC', 'USD/MYR OTC', 'NZD/USD OTC', 'LBP/USD OTC',
+        'OMR/CNY OTC'
+    ])];
+
     const otcPairs = validPairs.filter(p => p.toUpperCase().endsWith("OTC"));
     const nonOtcPairs = validPairs.filter(p => !p.toUpperCase().endsWith("OTC"));
 
@@ -506,6 +529,7 @@
         passwordSection = document.getElementById('passwordSection'); accessTypeSelectedSpan = document.getElementById('accessTypeSelected');
         passwordInputModal = document.getElementById('passwordInputModal'); submitPasswordBtn = document.getElementById('submitPasswordBtn'); passwordError = document.getElementById('passwordError');
         tempAccessBtn = document.getElementById('tempAccessBtn'); permAccessBtn = document.getElementById('permAccessBtn');
+        usernameInputHidden = document.getElementById('usernameInputHidden'); // Autofill fix
         usernameInputDisclaimer = document.getElementById('usernameInputDisclaimer'); targetGoalInput = document.getElementById('targetGoalInput');
         agreeDisclaimerBtn = document.getElementById('agreeDisclaimerBtn'); usernameErrorDisclaimer = document.getElementById('usernameErrorDisclaimer');
         signalInput = document.getElementById('signalInput'); checkSignalBtn = document.getElementById('checkSignalBtn');
@@ -555,8 +579,22 @@
         function showDisclaimerModal() { accessModal.classList.remove('active'); disclaimerModal.classList.add('active'); const defaultUsername = `Analyst${Math.floor(100 + dailyRandomGenerator() * 899)}`; usernameInputDisclaimer.value = getLSItem(LS_KEYS.USERNAME, defaultUsername); targetGoalInput.value = getLSItem(LS_KEYS.USER_GOAL, ''); usernameErrorDisclaimer.textContent = ''; }
         
         let selectedAccessTypeForPassword = '';
-        tempAccessBtn.addEventListener('click', () => { selectedAccessTypeForPassword='temporary'; accessTypeSelectedSpan.textContent='Temporary Pass'; passwordSection.style.display='block'; passwordInputModal.value=''; passwordInputModal.focus(); });
-        permAccessBtn.addEventListener('click', () => { selectedAccessTypeForPassword='permanent'; accessTypeSelectedSpan.textContent='Lifetime Key'; passwordSection.style.display='block'; passwordInputModal.value=''; passwordInputModal.focus(); });
+        tempAccessBtn.addEventListener('click', () => { 
+            selectedAccessTypeForPassword='temporary'; 
+            accessTypeSelectedSpan.textContent='Temporary Pass'; 
+            passwordSection.style.display='block'; 
+            usernameInputHidden.value = 'talentless-signal-temporary'; // Autofill fix
+            passwordInputModal.value=''; 
+            passwordInputModal.focus(); 
+        });
+        permAccessBtn.addEventListener('click', () => { 
+            selectedAccessTypeForPassword='permanent'; 
+            accessTypeSelectedSpan.textContent='Lifetime Key'; 
+            passwordSection.style.display='block'; 
+            usernameInputHidden.value = 'talentless-signal-permanent'; // Autofill fix
+            passwordInputModal.value=''; 
+            passwordInputModal.focus(); 
+        });
         passwordInputModal.addEventListener('keydown', (e) => e.key === 'Enter' && submitPasswordBtn.click());
         
         submitPasswordBtn.addEventListener('click', () => {
@@ -591,7 +629,6 @@
         const lastInput = getLSItem(LS_KEYS.LAST_INPUT_TEXT, ''); if(lastInput) signalInput.value = lastInput;
     }
 
-    function setButtonLoading(isLoading) { if (isLoading) { checkSignalBtnText.style.display = 'none'; checkSignalBtnLoader.style.display = 'inline-flex'; checkSignalBtn.disabled = true; } else { checkSignalBtnText.style.display = 'inline-block'; checkSignalBtnLoader.style.display = 'none'; checkSignalBtn.disabled = false; } }
     function displaySignalResultInUI(text, colorClass, predictionText, isPendingFeedback = false) { 
         currentSignalDisplay.innerHTML = `<div class="signal-text">${text.replace(/\n/g, '<br>')}</div><div class="signal-prediction">${predictionText || ''}</div>${isPendingFeedback ? '<p class="pending-feedback-msg">Awaiting your feedback to log trade.</p>' : ''}`;
         currentSignalDisplay.className = 'visible'; currentSignalDisplay.classList.add(colorClass);
@@ -600,7 +637,6 @@
     function clearSignalResultDisplay() { if(loadingInterval) clearTimeout(loadingInterval); currentSignalDisplay.classList.remove('visible', 'green', 'yellow', 'red'); currentSignalDisplay.innerHTML = ''; feedbackButtons.classList.remove('visible'); signalInput.disabled = false; signalInput.focus(); checkSignalBtn.disabled = false; setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, null); }
     function restoreCurrentSignalState() { const state = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE); if (state && state.status === 'pending_user_feedback') { displaySignalResultInUI( `${state.timePart}\n${state.displayPair}`, state.predictionColor, `${state.prediction} ${state.binaryScore}`, true ); signalInput.value = state.originalInput || ''; signalInput.disabled = true; checkSignalBtn.disabled = true; checkSignalBtnText.textContent = "Resolve Current Signal"; } else { signalInput.disabled = false; checkSignalBtn.disabled = false; checkSignalBtnText.textContent = "Process Signal"; const lastInput = getLSItem(LS_KEYS.LAST_INPUT_TEXT, ''); if(lastInput && !signalInput.value) signalInput.value = lastInput; } }
     
-    // --- New Loading Animation Function ---
     function startLoadingAnimation() {
         if (loadingInterval) clearTimeout(loadingInterval);
         currentSignalDisplay.innerHTML = `<div class="loading-text-item"></div>`;
@@ -609,11 +645,11 @@
         if (!loadingTextEl) return;
         
         let phraseIndex = 0;
-        const phraseDuration = 350; // ms per phrase
+        const phraseDuration = 350;
 
         function showNextPhrase() {
             loadingTextEl.classList.remove('animate');
-            void loadingTextEl.offsetWidth; // Trigger reflow to restart animation
+            void loadingTextEl.offsetWidth; 
             loadingTextEl.textContent = loadingPhrases[phraseIndex];
             loadingTextEl.classList.add('animate');
             
@@ -626,49 +662,64 @@
     }
     
     function handleCheckSignal() { 
-        // ... (input validation logic is the same)
         const currentSignalState = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE);
         if (currentSignalState && currentSignalState.status === 'pending_user_feedback') { updateUserStatsAndSignalHistory('avoid', currentSignalState); setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, { ...currentSignalState, status: 'resolved_auto_avoid' });}
         const istDate = getIST(); const currentMinute = istDate.getMinutes();
         if (currentMinute === lastCheckedMinuteServer) { displaySignalResultInUI('⏳ Server Syncing... Try next minute.', 'yellow', 'RATE LIMIT'); return; }
         const rawInput = signalInput.value.trim(); if (!rawInput) { displaySignalResultInUI('❗ Input empty. Provide a signal.', 'red', 'VALIDATION ERR'); return; }
-        const parts = rawInput.split(/\s+/); if (parts.length < 2) { displaySignalResultInUI('❗ Invalid format. Use: HH:MM PAIR [OTC]', 'red', 'FORMAT ERR'); return; }
-        const [timePart, ...pairParts] = parts; const [hStr, mStr] = timePart.split(':');
+        
+        const timeRegex = /^(\d{1,2}:\d{2})\s+(.+)$/;
+        const match = rawInput.match(timeRegex);
+
+        if (!match) {
+            displaySignalResultInUI('❗ Invalid format. Use: HH:MM PAIR [OTC]', 'red', 'FORMAT ERR');
+            return;
+        }
+
+        const timePart = match[1];
+        const rawPairString = match[2].trim();
+        const [hStr, mStr] = timePart.split(':');
         const h = parseInt(hStr, 10), m = parseInt(mStr, 10);
         if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) { displaySignalResultInUI('❗ Invalid time (HH:MM 24-hr).', 'red', 'TIME ERR'); return; }
         
-        // --- Start of new sequence ---
-        checkSignalBtn.disabled = true; // Disable button immediately
+        checkSignalBtn.disabled = true;
         signalInput.disabled = true;
-        startLoadingAnimation(); // Start the new animation
+        startLoadingAnimation(); 
 
-        // --- The real logic is now in a longer timeout ---
-        const totalLoadingTime = loadingPhrases.length * 350;
+        const totalLoadingTime = loadingPhrases.length * 350 + 100;
 
         setTimeout(() => {
-            if(loadingInterval) clearTimeout(loadingInterval); // Ensure animation loop is stopped
+            if(loadingInterval) clearTimeout(loadingInterval);
             
-            // --- Original signal logic starts here ---
-            let isOTCUser = pairParts.length > 0 && pairParts[pairParts.length-1].toUpperCase() === 'OTC';
-            let pairNameUser = pairParts.slice(0, isOTCUser ? pairParts.length - 1 : pairParts.length).join('');
-            const normalizedUserInput = pairNameUser.replace(/[\/-]/g, '').toUpperCase();
-            const searchKey = normalizedUserInput + (isOTCUser ? 'OTC' : '');
+            const searchKey = rawPairString.replace(/\s*[\/-]\s*|\s+/g, '').toUpperCase();
+            
             let bestMatch = { distance: Infinity, value: null };
-            for (const key in normalizedPairMap) { const dist = levenshtein(searchKey, key); if (dist < bestMatch.distance) { bestMatch = { distance: dist, value: normalizedPairMap[key] }; } if (dist === 0) break; }
+            for (const key in normalizedPairMap) { 
+                const dist = levenshtein(searchKey, key); 
+                if (dist < bestMatch.distance) { bestMatch = { distance: dist, value: normalizedPairMap[key] }; } 
+                if (dist === 0) break; 
+            }
             let finalPairName = bestMatch.value;
 
-            if (!finalPairName || bestMatch.distance > 2) { displaySignalResultInUI(`❗ Asset <b style="color:var(--accent-secondary);">${pairParts.join(' ')}</b> not found.`, 'red', 'ASSET UNKNOWN'); setButtonLoading(false); signalInput.disabled = false; checkSignalBtnText.textContent = "Process Signal"; return; }
+            if (!finalPairName || bestMatch.distance > 2) { 
+                displaySignalResultInUI(`❗ Asset <b style="color:var(--accent-secondary);">${rawPairString}</b> not found.`, 'red', 'ASSET UNKNOWN');
+                signalInput.disabled = false; 
+                checkSignalBtn.disabled = false;
+                checkSignalBtnText.textContent = "Process Signal"; 
+                return; 
+            }
             
-            if(isOTCUser && !finalPairName.toUpperCase().endsWith("OTC")){ const explicitOtcKey = normalizedUserInput + "OTC"; if(normalizedPairMap[explicitOtcKey]){ finalPairName = normalizedPairMap[explicitOtcKey]; } else { finalPairName = finalPairName + " OTC"; }}
             finalPairName = finalPairName.replace(/(OTC\s*)+$/i, "OTC").trim();
 
             const inputDate = new Date(istDate); inputDate.setHours(h, m, 0, 0);
             const timeDiffMins = (inputDate.getTime() - istDate.getTime()) / 60000;
-            if (timeDiffMins < -1.5 || timeDiffMins > 2.5) { displaySignalResultInUI('❗ Signal time out of range.', 'red', 'TIME RANGE ERR'); } else {
+            if (timeDiffMins < -1.5 || timeDiffMins > 2.5) { 
+                displaySignalResultInUI('❗ Signal time out of range.', 'red', 'TIME RANGE ERR'); 
+            } else {
                 const pSignal = computeSignalLogic(h, m); const altH = h < 12 ? h + 12 : h - 12; const aSignal = computeSignalLogic(altH, m);
                 const binP = pSignal === 'REVERSAL' ? 1 : 0; const binA = aSignal === 'REVERSAL' ? 1 : 0;
                 let predColor, finalSignalText;
-                if (binP && binA) { predColor = 'green'; finalSignalText = 'STRONG REVERSAL'; } else if (binP && !binA) { predColor = 'green'; finalSignalText = 'REVERSAL'; } else if (!binP && binA) { predColor = 'red'; finalSignalText = '50% CHANCES AVOID'; } else { predColor = 'red'; finalSignalText = 'STRONG AVOID'; }
+                if (binP && binA) { predColor = 'green'; finalSignalText = 'STRONG REVERSAL'; } else if (binP && !binA) { predColor = 'green'; finalSignalText = 'REVERSAL'; } else if (!binP && binA) { predColor = 'red'; finalSignalText = '50% CHANCE - AVOID'; } else { predColor = 'red'; finalSignalText = 'STRONG AVOID'; }
                 const binaryScore = `[P:${binP}/A:${binA}]`;
                 const newSignalState = { originalInput: rawInput, text: rawInput, timePart: timePart, displayPair: finalPairName, prediction: finalSignalText, predictionColor: predColor, binaryScore: binaryScore, status: 'pending_user_feedback', timestamp: Date.now() };
                 setLSItem(LS_KEYS.CURRENT_SIGNAL_STATE, newSignalState);
@@ -676,11 +727,10 @@
                 lastCheckedMinuteServer = currentMinute; checkSignalBtnText.textContent = "Resolve Current Signal";
             }
             updatePairActivityIndicator();
-            // No need to call setButtonLoading(false) here, as the displaySignalResultInUI handles the disabled state.
         }, totalLoadingTime);
     }
 
-    // --- ROBUST STATS LOGIC ---
+    // --- STATS LOGIC ---
     function handleFeedback(outcome) {
         const currentSignal = getLSItem(LS_KEYS.CURRENT_SIGNAL_STATE);
         if (!currentSignal) { showToastNotification("Error: No active signal data."); clearSignalResultDisplay(); return; }
@@ -762,7 +812,7 @@
         starPulseTradersPool = leaderboardData.slice(0, 3).map(t => ({name: t.name, flag: t.flag})); 
         if (starPulseTradersPool.length === 0) starPulseTradersPool.push({name:"ProTrader Elite", flag:"🌟"}); 
         const allPersonas = [...new Set([...indianTraderPersonas, ...globalTraderPersonas])]; 
-        generalPulseTradersPool = allPersonas.map(name => { const isIndian = indianTraderPersonas.includes(name); const flag = isIndian ? "🇮🇳" : countryFlags[Math.floor(dailyRandomGenerator() * (countryFlags.length -1)) +1]; return {name, flag}; });
+        generalPulseTradersPool = allPersonas.map(name => { const isIndian = indianTraderPersonas.includes(name); const flag = isIndian ? "🇮🇳" : countryFlags[Math.floor(dailyRandomGenerator() * (countryFlags.length -1)) + 1]; return {name, flag}; });
         if (generalPulseTradersPool.length === 0) generalPulseTradersPool.push({name:"Market Maven", flag:"🌍"});
     }
 
